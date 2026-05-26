@@ -1,0 +1,8 @@
+"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
+"0","","0","Negative Validation Flow","5","0","Validate negative registration scenarios","0"
+"0","","0","Negative Validation Flow","4","0","Validate negative login scenarios","0"
+"0","","0","Negative Validation Flow","9","0","Validate negative API scenarios","0"
+"0","","0","End to End User Flow (Register → Login → Notes → API → Logout)","3","0","Complete user journey from registration to logout","0"
+"0","","0","Negative Validation Flow","4","0","Validate negative notes scenarios using valid login","0"
+"0","","0","Pure API Notes Flow","1","0","Complete API lifecycle","0"
+"0","","0","UI End to End Flow (Register → Login → Notes → Delete → Logout)","1","0","Complete UI journey using UI only flow","0"
