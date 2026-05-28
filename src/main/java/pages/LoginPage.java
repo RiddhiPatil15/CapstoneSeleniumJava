@@ -27,9 +27,8 @@ public class LoginPage {
         wait.until(ExpectedConditions.visibilityOfElementLocated(password));
     }
 
-    // note: LOGIN
+    // note: login
     public void login(String userEmail, String userPassword) {
-
         waitForLoginPage();
         WebElement emailEle = driver.findElement(email);
         WebElement passEle = driver.findElement(password);
@@ -45,9 +44,8 @@ public class LoginPage {
         }
     }
 
-    // note: DASHBOARD
+    // note: dashboard
     public boolean isLoginSuccessful() {
-
         try {
             return wait.until(
                     ExpectedConditions.visibilityOfElementLocated(dashboardIndicator)).isDisplayed();
@@ -56,9 +54,8 @@ public class LoginPage {
         }
     }
 
-    // note: LOGOUT
+    // note: logout
     public void logout() {
-
         try {
             wait.until(ExpectedConditions.elementToBeClickable(logoutBtn)).click();
         } catch (Exception e) {
@@ -68,7 +65,6 @@ public class LoginPage {
 
     // note: Negative Login Test Case
     public String getLoginValidationError() {
-
         try {
             //note: invalid creds.
             By toast = By.cssSelector("[data-testid='alert-message']");

@@ -21,12 +21,8 @@ public class RegisterSteps {
     @Given("user opens the application")
     public void user_opens_the_application() {
 
-//        DriverFactory.getDriver().get(ConfigReader.getProperty("baseUrl"));
-//        registerPage = new RegisterPage(DriverFactory.getDriver());
-
-        WebDriver driver = DriverFactory.getDriver();
-        driver.get(ConfigReader.getProperty("baseUrl"));
-        registerPage = new RegisterPage(driver);
+        DriverFactory.getDriver().get(ConfigReader.getProperty("baseUrl"));
+        registerPage = new RegisterPage(DriverFactory.getDriver());
         registerPage.openRegisterForm();
     }
 

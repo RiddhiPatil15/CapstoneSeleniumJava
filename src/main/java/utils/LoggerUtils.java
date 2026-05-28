@@ -13,14 +13,13 @@ public class LoggerUtils {
     public static void initUser(String email) {
         try {
             currentUser = email;
-
             new File(FOLDER).mkdirs();
-
             writer = new FileWriter(FOLDER + "/" + email + ".txt", true);
 
             log("===== NEW TEST RUN =====");
             log("User: " + email);
             log("Time: " + LocalDateTime.now());
+            log("========================\n");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -34,42 +33,21 @@ public class LoggerUtils {
             writer.flush();
         } catch (Exception ignored) {}
     }
-
     public static void info(String message) {
         log("[INFO] " + message);
     }
-
     public static void warn(String message) {
         log("[WARN] " + message);
     }
-
     public static void error(String message) {
         log("[ERROR] " + message);
     }
 
-    // ================= NEW STRUCTURED LOGGING =================
-
-    public static void logNoteCreated(String category, String title) {
-        log("[NOTE CREATED] " + category + " : " + title);
-    }
-
-    public static void logSummary(String email,
-                                  int notesAdded,
-                                  int dashboardTotal,
-                                  int apiStatusCode) {
-
-        log("\n===== TEST SUMMARY =====");
-        log("User: " + email);
-        log("Notes Added: " + notesAdded);
-        log("Dashboard Total Notes: " + dashboardTotal);
-        log("API Status Code: " + apiStatusCode);
-        log("========================\n");
-    }
 
     public static void close() {
         try {
             if (writer != null) {
-                log("===== END RUN =====\n\n\n\n");
+                log("===== END RUN =====");
                 writer.close();
             }
         } catch (Exception ignored) {}

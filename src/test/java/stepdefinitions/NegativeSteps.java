@@ -5,7 +5,10 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import pages.NotesPage;
 import pages.RegisterPage;
@@ -16,6 +19,8 @@ import utils.ScreenshotUtils;
 import utils.WaitUtils;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -103,7 +108,6 @@ public class NegativeSteps {
 
         String screenshotName = "LOGIN_" + tcId;
         String actualError = loginPage.getLoginValidationError();
-        //actualError = actualError == null ? "" : actualError.trim().toLowerCase();
         if (actualError == null) {
             actualError = "";
         }
@@ -115,7 +119,7 @@ public class NegativeSteps {
         Assert.assertTrue(actualError.contains(expected));
     }
 
-    //====   notes negative ====//
+    //note: negative note cases
     @Given("user opens the application and navigates to login page")
     public void open_app_and_go_to_login() {
         DriverFactory.getDriver().get("https://practice.expandtesting.com/notes/app/login");
@@ -148,7 +152,6 @@ public class NegativeSteps {
 
     @When("user navigates to notes section")
     public void user_navigates_to_notes_section() {
-        //NotesPage notesPage = new NotesPage(DriverFactory.getDriver());
         WaitUtils.handleAds(DriverFactory.getDriver());
         DriverFactory.getDriver().findElement(By.xpath("//*[text()='Notes']")).click();
         System.out.println("NAVIGATED TO NOTES");
@@ -158,11 +161,25 @@ public class NegativeSteps {
     public void user_performs_invalid_notes_actions() {
         notesPage = new NotesPage(DriverFactory.getDriver());
 
+        By addBtn = By.cssSelector("[data-testid='add-new-note']");
         WaitUtils.handleAds(DriverFactory.getDriver());
-        DriverFactory.getDriver().findElement(By.cssSelector("[data-testid='add-new-note']")).click();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        WaitUtils.handleAds(DriverFactory.getDriver());
+        WaitUtils.handleAds(DriverFactory.getDriver());
 
-        //String t = (title == null) ? "" : title;
-        //String d = (description == null) ? "" : description;
+        WebDriver driver = DriverFactory.getDriver();
+        WebElement addButton = driver.findElement(addBtn);
+
+        try {
+            addButton.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver)
+                    .executeScript("arguments[0].click();", addButton);
+        }
         String t = "";
         if (title != null) {
             t = title;
@@ -182,7 +199,6 @@ public class NegativeSteps {
 
     @Then("proper notes error should be shown")
     public void proper_notes_error_should_be_shown() {
-
         String screenshotName = "NOTES_" + tcId;
         String actualError = "";
         List<WebElement> errors = DriverFactory.getDriver().findElements(By.cssSelector(".invalid-feedback"));
@@ -204,7 +220,6 @@ public class NegativeSteps {
     }
 
     //note: api negative case
-
     @When("API negative user reads {string} from ApiNegative sheet")
     public void api_negative_user_reads_from_api_negative_sheet(String tcId) {
         this.tcId = tcId;

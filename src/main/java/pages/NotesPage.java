@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import utils.WaitUtils;
@@ -57,8 +58,8 @@ public class NotesPage {
         // note: helps in case of unstable DOM rendering
         WaitUtils.waitForCondition(driver, d -> {
             try {
-                //return d.findElements(noteItems).size() >= 0;
-                return !d.findElements(noteItems).isEmpty();
+                return d.findElements(noteItems).size() >= 0;
+                //return !d.findElements(noteItems).isEmpty();
             } catch (Exception e) {
                 return false;
             }
@@ -82,7 +83,6 @@ public class NotesPage {
     }
 
     public void deleteNote() {
-
         WaitUtils.handleAds(driver);
         WaitUtils.scrollAndClick(driver, deleteBtn);
         WaitUtils.handleAds(driver);
@@ -90,8 +90,8 @@ public class NotesPage {
 
         WaitUtils.waitForCondition(driver, d -> {
             try {
-               // return d.findElements(noteItems).size() >= 0;
-                return !d.findElements(noteItems).isEmpty();
+                return d.findElements(noteItems).size() >= 0;
+                //return !d.findElements(noteItems).isEmpty();
             } catch (Exception e) {
                 return false;
             }
@@ -100,23 +100,35 @@ public class NotesPage {
         WaitUtils.handleAds(driver);
     }
 
-    // ---------------- EDIT FIRST NOTE ----------------
-    public void editFirstNote(String updatedTitle, String updatedDescription) {
-
+    public void editNoteByTitle(String targetTitle, String updatedTitle, String updatedDescription) {
         WaitUtils.handleAds(driver);
-        WaitUtils.scrollAndClick(driver, editBtn);
-        WaitUtils.handleAds(driver);
-
+        List<WebElement> notes = driver.findElements(noteItems);
+        for (WebElement note : notes) {
+            if (note.getText().contains(targetTitle)) {
+                WaitUtils.handleAds(driver);
+                WebElement editElement = note.findElement(editBtn);
+                try {
+                    editElement.click();
+                } catch (org.openqa.selenium.ElementClickInterceptedException e) {
+                    WaitUtils.handleAds(driver);
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].click();", editElement);
+                }
+                break;
+            }
+        }
         WebElement titleField = WaitUtils.waitForVisible(driver, titleInput);
         WebElement descField = WaitUtils.waitForVisible(driver, descInput);
 
         titleField.clear();
         titleField.sendKeys(updatedTitle);
+
         descField.clear();
         descField.sendKeys(updatedDescription);
 
         WaitUtils.scrollAndClick(driver, updateBtn);
         WaitUtils.waitForInvisible(driver, titleInput);
+
         WaitUtils.handleAds(driver);
     }
+
 }

@@ -23,6 +23,7 @@ Scenario Outline: Complete user journey from registration to logout
   When user edits first added note
   Then API should reflect edited note details
 
+  And user deletes all notes before logout
   And user logs out
 
 Examples:

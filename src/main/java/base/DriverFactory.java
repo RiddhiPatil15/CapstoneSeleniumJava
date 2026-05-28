@@ -6,34 +6,29 @@ import utils.ConfigReader;
 
 public class DriverFactory {
 
-    private static ThreadLocal<WebDriver> driver = new ThreadLocal<>();
-    // note: while parallel execution, it helps each scenario gets its own browser
+    private static WebDriver driver;
 
     public static void initDriver() {
         String browser = ConfigReader.getProperty("browser");
-        WebDriver webDriver;
-
         if (browser.equalsIgnoreCase("chrome")) {
-            webDriver = new ChromeDriver();
-
+            driver = new ChromeDriver();
+        } else {
+            driver = new ChromeDriver(); // fallback
         }
-        else {
-            webDriver = new ChromeDriver(); // note: could be used for edge, just a fallback!
-        }
-
-        webDriver.manage().window().maximize();
-        driver.set(webDriver);
+        driver.manage().window().maximize();
     }
 
     public static WebDriver getDriver() {
-        return driver.get();
+        if (driver == null) {
+            throw new RuntimeException("Driver is not initialized. Check @Before hook.");
+        }
+        return driver;
     }
 
     public static void quitDriver() {
-
-        if (driver.get() != null) {
-            driver.get().quit();
-            driver.remove();
+        if (driver != null) {
+            driver.quit();
+            driver = null;
         }
     }
 }

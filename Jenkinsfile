@@ -2,12 +2,8 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK17'
-        maven 'Maven3'
-    }
-
-    environment {
-        PROJECT_DIR = "${WORKSPACE}"
+        jdk 'jdk17'
+        maven 'Maven_Latest'
     }
 
     stages {
@@ -15,7 +11,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/RiddhiPatil15/selenium-java-capstone-notes-app.git'
+                    url: 'https://github.com/RiddhiPatil15/SeleniumJavaCapstoneProject.git'
             }
         }
 
@@ -47,12 +43,15 @@ pipeline {
             }
         }
 
-        stage('Publish Reports') {
+        stage('Publish HTML Report') {
             steps {
                 publishHTML([
                     reportDir: 'target/allure-report',
                     reportFiles: 'index.html',
-                    reportName: 'Allure Report'
+                    reportName: 'Allure Report',
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true
                 ])
             }
         }

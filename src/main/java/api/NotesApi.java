@@ -3,26 +3,20 @@ package api;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import utils.ConfigReader;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class NotesApi {
 
-    private static final String BASE_URL =
-            ConfigReader.getProperty("apiBaseUrl");
-
+    private static final String BASE_URL = ConfigReader.getProperty("apiBaseUrl");
     private String token;
 
-    // ---------------- AUTHENTICATE ----------------
+    // note: authenticate
     public void authenticate(String email, String password) {
-
         Map<String, String> body = new HashMap<>();
-
         body.put("email", email);
         body.put("password", password);
-
         Response response = RestAssured
                 .given()
                 .baseUri(BASE_URL)
@@ -39,29 +33,22 @@ public class NotesApi {
         }
     }
 
-    // ---------------- COMMON HEADERS ----------------
+    // note: header
     private Map<String, String> headers() {
-
         if (token == null) {
-            throw new RuntimeException(
-                    "Token missing. Authenticate first."
-            );
+            throw new RuntimeException("Token missing. Authenticate first.");
         }
-
         Map<String, String> headers = new HashMap<>();
-
         headers.put("x-auth-token", token);
-
         return headers;
     }
 
-    // ---------------- CREATE NOTE ----------------
-    public Response createNote(String title, String description) {
+    public Response createNote(String title, String description, String category) {
 
         Map<String, String> body = new HashMap<>();
-
         body.put("title", title);
         body.put("description", description);
+        body.put("category", category);
 
         return RestAssured
                 .given()
@@ -72,9 +59,8 @@ public class NotesApi {
                 .post("/notes");
     }
 
-    // ---------------- GET NOTES ----------------
+    // note: get note
     public Response getNotes() {
-
         return RestAssured
                 .given()
                 .baseUri(BASE_URL)
@@ -82,9 +68,8 @@ public class NotesApi {
                 .get("/notes");
     }
 
-    // ---------------- DELETE NOTE ----------------
+    // note: delete note
     public Response deleteNote(String noteId) {
-
         return RestAssured
                 .given()
                 .baseUri(BASE_URL)
@@ -92,58 +77,35 @@ public class NotesApi {
                 .delete("/notes/" + noteId);
     }
 
-    // ---------------- NOTES COUNT ----------------
+    // note: get note count
     public int getNotesCount() {
-
         return getNotes()
                 .jsonPath()
                 .getList("data")
                 .size();
     }
 
-    // ---------------- FIRST NOTE ID ----------------
+    // note: get first not ID
     public String getFirstNoteId() {
-
-        List<String> ids = getNotes()
-                .jsonPath()
-                .getList("data.id");
-
+        List<String> ids = getNotes().jsonPath().getList("data.id");
         if (ids == null || ids.isEmpty()) {
-
-            throw new RuntimeException(
-                    "No note IDs found"
-            );
+            throw new RuntimeException("No note IDs found");
         }
-
         return ids.get(0);
     }
 
-    // ---------------- FIRST NOTE TITLE ----------------
+    // note: get not title for latest note
     public String getLatestNoteTitle() {
-
-        List<String> titles = getNotes()
-                .jsonPath()
-                .getList("data.title");
-
+        List<String> titles = getNotes().jsonPath().getList("data.title");
         if (titles == null || titles.isEmpty()) {
-
-            throw new RuntimeException(
-                    "No note titles found"
-            );
+            throw new RuntimeException("No note titles found");
         }
-
         return titles.get(0);
     }
 
-    // ---------------- UPDATE NOTE ----------------
-    public Response updateNote(
-            String noteId,
-            String title,
-            String description
-    ) {
-
+    // note: update note
+    public Response updateNote(String noteId, String title, String description) {
         Map<String, String> body = new HashMap<>();
-
         body.put("title", title);
         body.put("description", description);
 
@@ -154,5 +116,14 @@ public class NotesApi {
                 .contentType("application/json")
                 .body(body)
                 .put("/notes/" + noteId);
+    }
+
+    // note: logout
+    public Response logout() {
+        return RestAssured
+                .given()
+                .baseUri(BASE_URL)
+                .headers(headers())
+                .delete("/users/logout");
     }
 }

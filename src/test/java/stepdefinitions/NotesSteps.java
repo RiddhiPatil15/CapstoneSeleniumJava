@@ -4,17 +4,14 @@ import api.NotesApi;
 import base.DriverFactory;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.openqa.selenium.WebDriver;
 import pages.NotesPage;
 import utils.ExcelUtils;
 import utils.LoggerUtils;
 import utils.WaitUtils;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import static stepdefinitions.RegisterSteps.email;
 import static stepdefinitions.RegisterSteps.password;
 
@@ -30,6 +27,8 @@ public class NotesSteps {
     List<Map<String, String>> uiNotes = new ArrayList<>();
     private String editedTitle;
     private String editedDescription;
+
+    private List<Map<String, String>> currentRunNotes = new ArrayList<>();
 
     // note: read data from notes sheet
     @When("user reads {string} from Notes sheet")
@@ -68,6 +67,8 @@ public class NotesSteps {
             note.put("category", category);
 
             uiNotes.add(note);
+
+            currentRunNotes.add(note);
         }
         LoggerUtils.info("TOTAL CREATED: " + createdTitles.size());
     }
@@ -131,34 +132,49 @@ public class NotesSteps {
     public void user_deletes_one_note_via_api() {
 
         notesApi.authenticate(email, password);
-        deletedNoteTitle = notesApi.getLatestNoteTitle();
-        String noteId = notesApi.getFirstNoteId();
 
-        LoggerUtils.warn("DELETING NOTE: " + deletedNoteTitle);
-
-        var response = notesApi.deleteNote(noteId);
-        if (response.getStatusCode() != 200) {
-
-            throw new AssertionError("Delete failed with status: " + response.getStatusCode());
+        if (currentRunNotes.isEmpty()) {
+            throw new AssertionError("No notes created in current run");
         }
-        LoggerUtils.info("NOTE DELETED SUCCESSFULLY");
+
+        Map<String, String> targetNote = currentRunNotes.get(currentRunNotes.size() - 1);
+        var response = notesApi.getNotes();
+        List<Map<String, Object>> apiNotes = response.jsonPath().getList("data");
+
+        String noteId = null;
+        for (Map<String, Object> n : apiNotes) {
+            if (String.valueOf(n.get("title")).equals(targetNote.get("title"))) {
+                noteId = String.valueOf(n.get("id"));
+                break;
+            }
+        }
+        if (noteId == null) {
+            throw new AssertionError("Could not find note in API for deletion: " + targetNote.get("title"));
+        }
+
+        notesApi.deleteNote(noteId);
+        deletedNoteTitle = targetNote.get("title");
+        currentRunNotes.remove(currentRunNotes.size() - 1);
+        LoggerUtils.info("DELETED CURRENT RUN NOTE: " + deletedNoteTitle);
     }
 
     // note: get notes count
     @Then("UI should show remaining notes correctly")
     public void ui_should_show_remaining_notes_correctly() {
-        //DriverFactory.getDriver().navigate().refresh();
-        WebDriver driver = DriverFactory.getDriver();
-        driver.navigate().refresh();
+
+        DriverFactory.getDriver().navigate().refresh();
         WaitUtils.handleAds(DriverFactory.getDriver());
 
-        // note: avoid race condition
         try {
             Thread.sleep(2000);
         } catch (InterruptedException ignored) {}
 
+        notesApi.authenticate(email, password);
+        int expectedCount = notesApi.getNotes()
+                .jsonPath()
+                .getList("data.id")
+                .size();
         int actualCount = notesPage.getNotesCount();
-        int expectedCount = apiCount - 1;
 
         LoggerUtils.info("EXPECTED COUNT: " + expectedCount);
         LoggerUtils.info("ACTUAL UI COUNT: " + actualCount);
@@ -166,7 +182,6 @@ public class NotesSteps {
         if (actualCount != expectedCount) {
             throw new AssertionError("UI count mismatch. Expected " + expectedCount + " but got " + actualCount);
         }
-
         boolean deletedStillPresent = notesPage.isNotePresent(deletedNoteTitle);
         if (deletedStillPresent) {
             throw new AssertionError("Deleted note still visible in UI: " + deletedNoteTitle);
@@ -175,15 +190,11 @@ public class NotesSteps {
         LoggerUtils.info("DELETED NOTE REMOVED FROM UI");
 
         //note: check remaining notes
-        for (String title : createdTitles) {
-
-            if (title.equals(deletedNoteTitle)) {
-                continue;
-            }
+        for (Map<String, String> note : currentRunNotes) {
+            String title = note.get("title");
             if (!notesPage.isNotePresent(title)) {
-                throw new AssertionError("Expected note missing in UI: " + title);
+                throw new AssertionError("Missing note in UI: " + title);
             }
-            LoggerUtils.info("UI VERIFIED NOTE: " + title);
         }
         LoggerUtils.info("UI VALIDATION SUCCESSFUL");
     }
@@ -195,41 +206,32 @@ public class NotesSteps {
     }
 
     // note: edit first note
+
     @When("user edits first added note")
     public void user_edits_first_added_note() {
-        if (createdTitles.size() <= 1) {
-            LoggerUtils.warn("NO REMAINING NOTES AVAILABLE FOR EDIT");
+
+        if (currentRunNotes.isEmpty()) {
+            LoggerUtils.warn("NO NOTES IN CURRENT RUN TO EDIT");
             return;
         }
 
-        // find first non-deleted note
-        Map<String, String> noteToEdit = null;
-        for (Map<String, String> note : uiNotes) {
-            if (!note.get("title").equals(deletedNoteTitle)) {
-                noteToEdit = note;
-                break;
-            }
-        }
-        if (noteToEdit == null) {
-            LoggerUtils.warn("NO VALID NOTE FOUND FOR EDIT");
-            return;
-        }
+        Map<String, String> targetNote = currentRunNotes.get(0);
 
-        String originalTitle = noteToEdit.get("title");
-        String originalDescription = noteToEdit.get("description");
+        String originalTitle = targetNote.get("title");
+        String originalDesc = targetNote.get("description");
+
         editedTitle = originalTitle + " NEW!";
-        editedDescription = originalDescription + " NEW!";
+        editedDescription = originalDesc + " NEW!";
 
-        notesPage.editFirstNote(editedTitle, editedDescription);
-        LoggerUtils.info("NOTE EDITED");
-        LoggerUtils.info("OLD TITLE: " + originalTitle);
-        LoggerUtils.info("NEW TITLE: " + editedTitle);
-        LoggerUtils.info("OLD DESCRIPTION: " + originalDescription);
+        notesPage.editNoteByTitle(
+                originalTitle,
+                editedTitle,
+                editedDescription
+        );
 
-        LoggerUtils.info("NEW DESCRIPTION: " + editedDescription);
+        LoggerUtils.info("EDITED CURRENT RUN FIRST NOTE: " + originalTitle);
     }
 
-    // note: api validate edit
     @Then("API should reflect edited note details")
     public void api_should_reflect_edited_note_details() {
 
@@ -237,17 +239,38 @@ public class NotesSteps {
             LoggerUtils.warn("EDIT VALIDATION SKIPPED - NO NOTE WAS EDITED");
             return;
         }
+
         notesApi.authenticate(email, password);
         var response = notesApi.getNotes();
-        List<String> titles = response.jsonPath().getList("data.title");
-        List<String> descriptions = response.jsonPath().getList("data.description");
 
-        if (!titles.contains(editedTitle)) {
-            throw new AssertionError("Edited title not found in API");
+        List<Map<String, Object>> notes = response.jsonPath().getList("data");
+        boolean found = false;
+        for (Map<String, Object> note : notes) {
+            String title = String.valueOf(note.get("title"));
+            String desc = String.valueOf(note.get("description"));
+            if (title.equals(editedTitle) &&
+                    desc.equals(editedDescription)) {
+                found = true;
+                break;
+            }
         }
-        if (!descriptions.contains(editedDescription)) {
-            throw new AssertionError("Edited description not found in API");
+        if (!found) {
+            throw new AssertionError("Edited note not found in API with correct title + description");
         }
+
         LoggerUtils.info("API EDIT VALIDATION SUCCESSFUL");
+    }
+
+    @When("user deletes all notes before logout")
+    public void delete_all_notes_before_logout() {
+
+        notesApi.authenticate(email, password);
+
+        List<Map<String, Object>> notes = notesApi.getNotes().jsonPath().getList("data");
+        for (Map<String, Object> note : notes) {
+            String id = String.valueOf(note.get("id"));
+            notesApi.deleteNote(id);
+        }
+        LoggerUtils.info("ALL NOTES CLEANED UP BEFORE LOGOUT");
     }
 }

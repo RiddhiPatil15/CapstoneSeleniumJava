@@ -10,9 +10,7 @@ import io.cucumber.testng.CucumberOptions;
                 "pretty",
                 "html:reports/cucumber.html",
                 "io.qameta.allure.cucumber7jvm.AllureCucumber7Jvm"
-        },
-        monochrome = true,
-        dryRun = false
+        }
 )
 public class TestRunner extends AbstractTestNGCucumberTests {
 
