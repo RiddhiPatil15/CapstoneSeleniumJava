@@ -27,6 +27,15 @@ pipeline {
             }
         }
 
+        stage('Clean JMeter Results') {
+            steps {
+                bat '''
+                if exist jmeter\\results\\results.jtl del /f /q jmeter\\results\\results.jtl
+                if exist jmeter\\reports rmdir /s /q jmeter\\reports
+                '''
+            }
+        }
+
         stage('Run JMeter Performance Tests') {
             steps {
                 bat '''
