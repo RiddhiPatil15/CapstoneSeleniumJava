@@ -3,8 +3,7 @@ package utils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import io.qameta.allure.Allure;
-import java.io.FileInputStream;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +21,7 @@ public class ScreenshotUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return path;
     }
 
@@ -39,12 +39,6 @@ public class ScreenshotUtils {
             destination.getParentFile().mkdirs();
             Files.copy(source.toPath(), destination.toPath());
 
-            try (FileInputStream fis = new FileInputStream(destination)) {
-                Allure.addAttachment(
-                        "Failure Screenshot - " + scenarioName,
-                        fis
-                );
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
