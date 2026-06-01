@@ -21,23 +21,7 @@ pipeline {
             }
         }
 
-        stage('Run API Tests') {
-            steps {
-                bat '''
-                mvn test -DsuiteXmlFile=src/test/resources/testng.xml
-                '''
-            }
-        }
-
-        stage('Run UI Tests') {
-            steps {
-                bat '''
-                mvn test -DsuiteXmlFile=src/test/resources/testng.xml
-                '''
-            }
-        }
-
-        stage('Run Negative Tests') {
+        stage('Run Automation Tests') {
             steps {
                 bat '''
                 mvn test -DsuiteXmlFile=src/test/resources/testng.xml
