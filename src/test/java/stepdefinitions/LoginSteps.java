@@ -6,7 +6,6 @@ import base.DriverFactory;
 import io.cucumber.java.en.*;
 import org.openqa.selenium.WebDriver;
 import pages.LoginPage;
-
 import static stepdefinitions.RegisterSteps.email;
 import static stepdefinitions.RegisterSteps.password;
 

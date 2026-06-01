@@ -1,6 +1,7 @@
 package pages;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import utils.WaitUtils;
@@ -40,8 +41,7 @@ public class RegisterPage {
 
     public void submitRegistration() {
         WaitUtils.handleAds(driver);
-        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(registerBtn)
-        );
+         WebElement button = WaitUtils.waitForClickable(driver, registerBtn);
         try {
             button.click();
         } catch (Exception e) {
@@ -50,12 +50,13 @@ public class RegisterPage {
     }
 
     public String getRegistrationSuccessMessage() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg)).getText();
+        //return wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg)).getText();
+        return WaitUtils.waitForVisible(driver, successMsg).getText();
     }
 
     public boolean isUserAlreadyExists() {
         try {
-            String msg = wait.until(ExpectedConditions.visibilityOfElementLocated(existingUserToast)).getText();
+            String msg = WaitUtils.waitForVisible(driver, existingUserToast).getText();
             return msg.toLowerCase().contains("already exists");
         } catch (Exception e) {
             return false;
@@ -63,31 +64,34 @@ public class RegisterPage {
     }
 
     public void goToLoginFromExistingUserMessage() {
-        WebElement link = wait.until(ExpectedConditions.visibilityOfElementLocated(loginHereLink));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
-        wait.until(ExpectedConditions.elementToBeClickable(loginHereLink));
+        WebElement link = WaitUtils.waitForVisible(driver, loginHereLink);
+        new Actions(driver).scrollToElement(link).perform();
+        WaitUtils.waitForClickable(driver, loginHereLink);
         try {
             link.click();
         } catch (ElementClickInterceptedException e) {
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", link);
         }
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[data-testid='login-email']")));
+         WaitUtils.waitForVisible(driver, By.cssSelector("[data-testid='login-email']"));
     }
 
     public void goToLoginFromSuccessFlow() {
         WaitUtils.handleAds(driver);
-        WebElement link = wait.until(ExpectedConditions.elementToBeClickable(loginLink));
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", link);
-        link.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("[data-testid='login-email']")));
+        WebElement link = WaitUtils.waitForClickable(driver, loginLink);
+        new Actions(driver).scrollToElement(link).perform();
+        try {
+            link.click();
+        } catch (Exception e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", link);
+        }
+        WaitUtils.waitForVisible(driver, By.cssSelector("[data-testid='login-email']"));
     }
 
     public String getValidationError() {
-
         try {
             List<WebElement> errors = driver.findElements(By.cssSelector(".invalid-feedback, .alert-danger, .error, .text-danger"));
-            for (WebElement el : errors) {
-                String text = el.getText().trim();
+            for (WebElement ele : errors) {
+                String text = ele.getText().trim();
                 if (!text.isEmpty()) {
                     return text;
                 }

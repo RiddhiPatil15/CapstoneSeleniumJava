@@ -28,33 +28,26 @@ public class NotesPage {
 
     // create note
     public void createNote(String title, String description) {
-
         WaitUtils.handleAds(driver);
         WaitUtils.scrollAndClick(driver, addNoteBtn);
         WaitUtils.handleAds(driver);
 
-        // note: if section was still blocked due to ad
+        // if notes form did not open
         if (driver.findElements(titleInput).isEmpty()) {
             WaitUtils.handleAds(driver);
-            WaitUtils.scrollAndClick(driver, addNoteBtn
-            );
+            WaitUtils.scrollAndClick(driver, addNoteBtn);
         }
-        WebElement titleField = WaitUtils.waitForVisible(driver, titleInput);
-        WebElement descField = WaitUtils.waitForVisible(driver, descInput);
-        titleField.clear();
-        titleField.sendKeys(title);
-        descField.clear();
-        descField.sendKeys(description);
-
+        WaitUtils.HealType(driver, titleInput, title);
+        WaitUtils.HealType(driver, descInput, description);
         WaitUtils.scrollAndClick(driver, saveBtn);
         WaitUtils.waitForInvisible(driver, titleInput);
         WaitUtils.handleAds(driver);
     }
+
     // note: count note
     public int getNotesCount() {
 
         WaitUtils.handleAds(driver);
-
         // note: helps in case of unstable DOM rendering
         WaitUtils.waitForCondition(driver, d -> {
             try {
@@ -64,6 +57,7 @@ public class NotesPage {
                 return false;
             }
         });
+
         int count = driver.findElements(noteItems).size();
         System.out.println("FOUND NOTES IN UI: " + count);
         return count;
@@ -91,7 +85,6 @@ public class NotesPage {
         WaitUtils.waitForCondition(driver, d -> {
             try {
                 return d.findElements(noteItems).size() >= 0;
-                //return !d.findElements(noteItems).isEmpty();
             } catch (Exception e) {
                 return false;
             }

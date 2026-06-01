@@ -8,7 +8,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import pages.NotesPage;
 import pages.RegisterPage;
@@ -19,8 +18,6 @@ import utils.ScreenshotUtils;
 import utils.WaitUtils;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
-
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -47,7 +44,6 @@ public class NegativeSteps {
     // note: register negative case
     @When("negative user reads {string} from RegisterNegative sheet")
     public void negative_user_reads_from_register_negative_sheet(String tcId) {
-
         this.tcId = tcId;
         name = ExcelUtils.getCellData("RegisterNegative", tcId, "Name");
         email = ExcelUtils.getCellData("RegisterNegative", tcId, "Email");
@@ -133,7 +129,6 @@ public class NegativeSteps {
 
     @Then("dashboard should be visible for notes flow")
     public void dashboard_should_be_visible_for_notes_flow() {
-
         LoginPage loginPage = new LoginPage(DriverFactory.getDriver());
         if (!loginPage.isLoginSuccessful()) {
             throw new AssertionError("Dashboard not visible for notes flow");
@@ -150,52 +145,29 @@ public class NegativeSteps {
         expectedError = ExcelUtils.getCellData("NotesNegative", tcId, "Expected Error");
     }
 
-    @When("user navigates to notes section")
-    public void user_navigates_to_notes_section() {
-        WaitUtils.handleAds(DriverFactory.getDriver());
-        DriverFactory.getDriver().findElement(By.xpath("//*[text()='Notes']")).click();
-        System.out.println("NAVIGATED TO NOTES");
-    }
+        @When("user performs invalid notes actions")
+        public void user_performs_invalid_notes_actions() {
 
-    @When("user performs invalid notes actions")
-    public void user_performs_invalid_notes_actions() {
-        notesPage = new NotesPage(DriverFactory.getDriver());
+            notesPage = new NotesPage(DriverFactory.getDriver());
+            WebDriver driver = DriverFactory.getDriver();
 
-        By addBtn = By.cssSelector("[data-testid='add-new-note']");
-        WaitUtils.handleAds(DriverFactory.getDriver());
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            By addBtn = By.cssSelector("[data-testid='add-new-note']");
+            By titleInput = By.cssSelector("[data-testid='note-title']");
+            By descInput = By.cssSelector("[data-testid='note-description']");
+            By submitBtn = By.cssSelector("[data-testid='note-submit']");
+
+            WaitUtils.handleAds(driver);
+            WaitUtils.safeHealClick(driver, addBtn);
+            String t = title == null ? "" : title;
+            String d = description == null ? "" : description;
+
+            WaitUtils.HealType(driver, titleInput, t);
+            WaitUtils.HealType(driver, descInput, d);
+
+            WaitUtils.handleAds(driver);
+            WaitUtils.scrollAndClick(driver, submitBtn);
+            WaitUtils.handleAds(driver);
         }
-        WaitUtils.handleAds(DriverFactory.getDriver());
-        WaitUtils.handleAds(DriverFactory.getDriver());
-
-        WebDriver driver = DriverFactory.getDriver();
-        WebElement addButton = driver.findElement(addBtn);
-
-        try {
-            addButton.click();
-        } catch (Exception e) {
-            ((JavascriptExecutor) driver)
-                    .executeScript("arguments[0].click();", addButton);
-        }
-        String t = "";
-        if (title != null) {
-            t = title;
-        }
-        String d = "";
-        if (description != null) {
-            d = description;
-        }
-        DriverFactory.getDriver().findElement(By.cssSelector("[data-testid='note-title']")).sendKeys(t);
-
-        DriverFactory.getDriver().findElement(By.cssSelector("[data-testid='note-description']")).sendKeys(d);
-
-        WaitUtils.handleAds(DriverFactory.getDriver());
-        WaitUtils.scrollAndClick(DriverFactory.getDriver(), By.cssSelector("[data-testid='note-submit']"));
-        WaitUtils.handleAds(DriverFactory.getDriver());
-    }
 
     @Then("proper notes error should be shown")
     public void proper_notes_error_should_be_shown() {

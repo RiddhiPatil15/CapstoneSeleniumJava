@@ -4,11 +4,9 @@ Feature: Negative Validation Flow
 Scenario Outline: Validate negative registration scenarios
 
   Given user opens the application
-
   When negative user reads "<TC_ID>" from RegisterNegative sheet
   And user enters invalid registration details
   And user submits invalid registration form
-
   Then proper registration error should be shown
 
 Examples:
@@ -24,10 +22,8 @@ Examples:
 Scenario Outline: Validate negative login scenarios
 
   Given user opens the application
-
   When negative user reads "<TC_ID>" from LoginNegative sheet
   And user enters invalid login details
-
   Then proper login error should be shown
 
 Examples:
@@ -41,11 +37,8 @@ Examples:
 Scenario Outline: Validate negative notes scenarios using valid login
 
   Given user opens the application and navigates to login page
-
   When user logs in with valid credentials for notes
-
   Then dashboard should be visible for notes flow
-
   When user reads "<TC_ID>" from NotesNegative sheet
   And user performs invalid notes actions
   Then proper notes error should be shown
@@ -62,9 +55,7 @@ Examples:
 Scenario Outline: Validate negative API scenarios
 
   When API negative user reads "<TC_ID>" from ApiNegative sheet
-
   And user performs invalid API action
-
   Then proper API error should be returned
 
 Examples:

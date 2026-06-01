@@ -16,7 +16,7 @@ import java.util.Map;
 public class APISteps {
     private final String BASE_URL = ConfigReader.getProperty("apiBaseUrl");
     private final NotesApi notesApi = new NotesApi();
-    private String token;
+    //private String token;
     private String email;
     private String password;
     private String createdNoteId;
@@ -104,9 +104,7 @@ public class APISteps {
     @Then("note should exist in API response")
     public void note_should_exist_in_api_response() {
         Response response = notesApi.getNotes();
-
         AllureUtils.attachText("GET NOTES RESPONSE", response.asPrettyString());
-
         List<String> titles = response.jsonPath().getList("data.title");
         if (!titles.contains(createdNoteTitle)) {
             throw new AssertionError("Created note not found");
@@ -117,7 +115,6 @@ public class APISteps {
     // note: delete note
     @When("user deletes created note via API")
     public void user_deletes_created_note_via_api() {
-
         Response response = notesApi.deleteNote(createdNoteId);
         AllureUtils.attachText("DELETE NOTE RESPONSE", response.asPrettyString());
         if (response.getStatusCode() != 200) {
@@ -130,9 +127,7 @@ public class APISteps {
     @Then("deleted note should not exist anymore")
     public void deleted_note_should_not_exist_anymore() {
         Response response = notesApi.getNotes();
-
         AllureUtils.attachText("VERIFY DELETE RESPONSE", response.asPrettyString());
-
         List<Integer> ids = response.jsonPath().getList("data.id");
         boolean exists = ids.contains(createdNoteId);
         if (exists) {
@@ -145,7 +140,6 @@ public class APISteps {
     @And("user logs out via API")
     public void user_logs_out_via_api() {
         Response response = notesApi.logout();
-
         AllureUtils.attachText("LOGOUT RESPONSE", response.asPrettyString());
         if (response.getStatusCode() != 200) {
             throw new AssertionError("Logout failed");

@@ -11,7 +11,7 @@ pipeline {
         stage('Checkout Code') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/RiddhiPatil15/SeleniumJavaCapstoneProject.git'
+                    url: 'https://github.com/RiddhiPatil15/CapstoneSeleniumJava.git'
             }
         }
 
@@ -21,17 +21,26 @@ pipeline {
             }
         }
 
-        stage('Run UI + API + E2E + Negative Tests') {
+        stage('Run API Tests') {
             steps {
-                bat 'mvn test'
+                bat '''
+                mvn test -DsuiteXmlFile=src/test/resources/testng.xml
+                '''
             }
         }
 
-        stage('Clean JMeter Results') {
+        stage('Run UI Tests') {
             steps {
                 bat '''
-                if exist jmeter\\results\\results.jtl del /f /q jmeter\\results\\results.jtl
-                if exist jmeter\\reports rmdir /s /q jmeter\\reports
+                mvn test -DsuiteXmlFile=src/test/resources/testng.xml
+                '''
+            }
+        }
+
+        stage('Run Negative Tests') {
+            steps {
+                bat '''
+                mvn test -DsuiteXmlFile=src/test/resources/testng.xml
                 '''
             }
         }
@@ -39,6 +48,9 @@ pipeline {
         stage('Run JMeter Performance Tests') {
             steps {
                 bat '''
+                if exist jmeter\\results\\results.jtl del /f /q jmeter\\results\\results.jtl
+                if exist jmeter\\reports rmdir /s /q jmeter\\reports
+
                 jmeter -n -t jmeter/testplan.jmx ^
                 -l jmeter/results/results.jtl ^
                 -e -o jmeter/reports
@@ -48,14 +60,18 @@ pipeline {
 
         stage('Generate Allure Report') {
             steps {
-                bat 'allure generate target/allure-results -o target/allure-report --clean'
+                allure([
+                    includeProperties: false,
+                    jdk: '',
+                    results: [[path: 'target/allure-results']]
+                ])
             }
         }
 
         stage('Publish HTML Report') {
             steps {
                 publishHTML([
-                    reportDir: 'target/allure-report',
+                    reportDir: 'allure-report',
                     reportFiles: 'index.html',
                     reportName: 'Allure Report',
                     allowMissing: true,
@@ -69,9 +85,10 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: 'target/surefire-reports/**', fingerprint: true
-            archiveArtifacts artifacts: 'target/allure-report/**', fingerprint: true
-            archiveArtifacts artifacts: 'jmeter/reports/**', fingerprint: true
+            archiveArtifacts artifacts: 'target/allure-results/**', fingerprint: true
+            archiveArtifacts artifacts: 'allure-report/**', fingerprint: true
             archiveArtifacts artifacts: 'jmeter/results/**', fingerprint: true
+            archiveArtifacts artifacts: 'jmeter/reports/**', fingerprint: true
         }
 
         success {

@@ -24,16 +24,14 @@ public class NotesSteps {
     private List<String> createdTitles = new ArrayList<>();
     private int apiCount;
     private String deletedNoteTitle;
-    List<Map<String, String>> uiNotes = new ArrayList<>();
+    //List<Map<String, String>> uiNotes = new ArrayList<>();
     private String editedTitle;
     private String editedDescription;
-
     private List<Map<String, String>> currentRunNotes = new ArrayList<>();
 
     // note: read data from notes sheet
     @When("user reads {string} from Notes sheet")
     public void user_reads_from_notes_sheet(String tc) {
-
         this.tcId = tc;
         notesPage = new NotesPage(DriverFactory.getDriver());
         notesApi = new NotesApi();
@@ -65,9 +63,7 @@ public class NotesSteps {
             note.put("title", title);
             note.put("description", description);
             note.put("category", category);
-
-            uiNotes.add(note);
-
+//            uiNotes.add(note);
             currentRunNotes.add(note);
         }
         LoggerUtils.info("TOTAL CREATED: " + createdTitles.size());
@@ -96,7 +92,6 @@ public class NotesSteps {
         int statusCode = response.getStatusCode();
         LoggerUtils.info("API RESPONSE STATUS CODE: " + statusCode);
         if (statusCode != 200) {
-
             throw new AssertionError("Invalid API status code: " + statusCode);
         }
 
@@ -106,18 +101,13 @@ public class NotesSteps {
         // note: to validate every excel note exists in API
         for (String expectedTitle : createdTitles) {
             if (!apiTitles.contains(expectedTitle)) {
-
                 LoggerUtils.error("MISSING IN API: " + expectedTitle);
-                LoggerUtils.info("API MATCH FOUND: " + expectedTitle);
-
                 throw new AssertionError("Missing note in API: " + expectedTitle);
             }
         }
         LoggerUtils.info("UI <---> API VALIDATION SUMMARY STARTED");
-
         LoggerUtils.info("UI NOTES COUNT: " + createdTitles.size());
         LoggerUtils.info("API NOTES COUNT: " + apiCount);
-        LoggerUtils.info("TOTAL NOTES IN API: " + apiCount);
 
         if (apiCount >= createdTitles.size()) {
             LoggerUtils.info("UI <---> API VALIDATION PASSED");
@@ -132,7 +122,6 @@ public class NotesSteps {
     public void user_deletes_one_note_via_api() {
 
         notesApi.authenticate(email, password);
-
         if (currentRunNotes.isEmpty()) {
             throw new AssertionError("No notes created in current run");
         }
@@ -170,10 +159,7 @@ public class NotesSteps {
         } catch (InterruptedException ignored) {}
 
         notesApi.authenticate(email, password);
-        int expectedCount = notesApi.getNotes()
-                .jsonPath()
-                .getList("data.id")
-                .size();
+        int expectedCount = notesApi.getNotes().jsonPath().getList("data.id").size();
         int actualCount = notesPage.getNotesCount();
 
         LoggerUtils.info("EXPECTED COUNT: " + expectedCount);
@@ -188,7 +174,6 @@ public class NotesSteps {
         }
 
         LoggerUtils.info("DELETED NOTE REMOVED FROM UI");
-
         //note: check remaining notes
         for (Map<String, String> note : currentRunNotes) {
             String title = note.get("title");
@@ -223,11 +208,7 @@ public class NotesSteps {
         editedTitle = originalTitle + " NEW!";
         editedDescription = originalDesc + " NEW!";
 
-        notesPage.editNoteByTitle(
-                originalTitle,
-                editedTitle,
-                editedDescription
-        );
+        notesPage.editNoteByTitle(originalTitle, editedTitle, editedDescription);
 
         LoggerUtils.info("EDITED CURRENT RUN FIRST NOTE: " + originalTitle);
     }
@@ -255,7 +236,7 @@ public class NotesSteps {
             }
         }
         if (!found) {
-            throw new AssertionError("Edited note not found in API with correct title + description");
+            throw new AssertionError("Edited note not found in API with correct title and description");
         }
 
         LoggerUtils.info("API EDIT VALIDATION SUCCESSFUL");

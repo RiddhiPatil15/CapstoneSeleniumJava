@@ -1,6 +1,7 @@
 package utils;
 
 import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -66,67 +67,40 @@ public class WaitUtils {
         }
     }
 
-    public static void scrollAndClick(WebDriver driver, By locator) {
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-        wait.until(ExpectedConditions.presenceOfElementLocated(locator));
-        WebElement ele = driver.findElement(locator);
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", ele);
+    public static void scrollAndClick(WebDriver driver, By locator) {
+        WebElement ele = waitForVisible(driver, locator);
+        new Actions(driver).scrollToElement(ele).perform();
         try {
-            wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
+            waitForClickable(driver, locator).click();
         } catch (Exception e) {
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", ele);
         }
     }
 
-    public static WebElement waitForPresence(WebDriver driver, By locator) {
-        return new WebDriverWait(driver, Duration.ofSeconds(DEFAULT_TIMEOUT)).until(ExpectedConditions.presenceOfElementLocated(locator));
-    }
-
-    // note: Safe click forces js executor to bypass overlays of popups
     public static void safeHealClick(WebDriver driver, By locator) {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         try {
             handleAds(driver);
-            wait.until(ExpectedConditions.elementToBeClickable(locator)).click();
-        }
-        catch (Exception e) {
+            waitForClickable(driver, locator).click();
+        } catch (Exception e) {
             handleAds(driver);
-            WebElement ele = driver.findElement(locator);
+            WebElement ele = waitForVisible(driver, locator);
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", ele);
         }
     }
 
     public static void HealType(WebDriver driver, By locator, String value) {
         handleAds(driver);
-        WebElement element = null;
-        for (int i = 0; i < 4; i++) {
-            try {
-                element = waitForPresence(driver, locator);
-                break;
-            } catch (Exception e) {
-                handleAds(driver);
-            }
-        }
-        if (element == null) {
-            throw new RuntimeException("Element not found even after retries: " + locator);
-        }
-        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block:'center'});", element);
-        handleAds(driver);
-        try {
-            waitForClickable(driver, locator);
-        } catch (Exception ignored) {
-        }
+        WebElement element = waitForVisible(driver, locator);
+        new Actions(driver).scrollToElement(element).perform();
         try {
             element.click();
         } catch (Exception e) {
             ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
         }
-        try {
-            element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-            element.sendKeys(Keys.DELETE);
-        } catch (Exception ignored) {}
+
+        element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        element.sendKeys(Keys.DELETE);
         element.sendKeys(value);
     }
-
 }

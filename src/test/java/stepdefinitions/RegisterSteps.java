@@ -28,7 +28,6 @@ public class RegisterSteps {
 
     @When("user reads {string} from Users sheet")
     public void user_reads_from_users_sheet(String tcId) {
-
         this.testCaseId = tcId;
         name = ExcelUtils.getUserData(tcId, "Name");
         email = ExcelUtils.getUserData(tcId, "Email");
@@ -38,7 +37,6 @@ public class RegisterSteps {
 
     @When("user enters registration details")
     public void user_enters_registration_details() {
-
         registerPage.enterName(name);
         registerPage.enterEmail(email);
         registerPage.enterPassword(password);
@@ -47,7 +45,6 @@ public class RegisterSteps {
 
     @When("user submits the registration form")
     public void user_submits_the_registration_form() {
-
         try {
             registerPage.submitRegistration();
         } catch (Exception e) {
@@ -58,7 +55,6 @@ public class RegisterSteps {
 
     @Then("user should see registration success message")
     public void user_should_see_registration_success_message() {
-
         // note: for existing user
         if (registerPage.isUserAlreadyExists()) {
             System.out.println("USER EXISTS ----> Navigating to login");
