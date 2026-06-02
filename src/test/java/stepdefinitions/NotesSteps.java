@@ -189,7 +189,6 @@ public class NotesSteps {
     }
 
     // note: edit first note
-
     @When("user edits first added note")
     public void user_edits_first_added_note() {
 

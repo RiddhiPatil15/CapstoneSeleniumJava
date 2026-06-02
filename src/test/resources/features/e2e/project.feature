@@ -1,4 +1,4 @@
-Feature: End to End User Flow (Register → Login → Notes → API → Logout)
+Feature: End to End User Flow (Register --> Login --> Notes --> API --> Logout)
 
 @e2e
 Scenario Outline: Complete user journey from registration to logout
