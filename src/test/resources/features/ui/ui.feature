@@ -1,4 +1,4 @@
-Feature: UI End to End Flow (Register → Login → Notes → Delete → Logout)
+Feature: UI End to End Flow (Register --> Login --> Notes --> Delete --> Logout)
 
 @ui
 Scenario Outline: Complete UI journey using UI only flow
