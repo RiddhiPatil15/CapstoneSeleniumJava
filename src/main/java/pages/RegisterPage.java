@@ -23,11 +23,12 @@ public class RegisterPage {
     By name = By.cssSelector("[data-testid='register-name']");
     By password = By.cssSelector("[data-testid='register-password']");
     By confirmPassword = By.cssSelector("[data-testid='register-confirm-password']");
-    By registerBtn = By.xpath("//button[text()='Register']");
-    By successMsg = By.xpath("//div[contains(@class,'alert-success')]//b");
+    By registerBtn = By.cssSelector("[data-testid='register-submit']");
+    By successMsg = By.cssSelector("div.alert-success > b");
     By loginLink = By.cssSelector("[data-testid='login-view']");
     By existingUserToast = By.cssSelector("[data-testid='alert-message']");
-    By loginHereLink = By.xpath("//span[contains(text(),'Log in here')]");
+    By loginHereLink = By.cssSelector("[data-testid='login-view']");
+
 
     public void openRegisterForm() {
         WaitUtils.handleAds(driver);
@@ -50,7 +51,6 @@ public class RegisterPage {
     }
 
     public String getRegistrationSuccessMessage() {
-        //return wait.until(ExpectedConditions.visibilityOfElementLocated(successMsg)).getText();
         return WaitUtils.waitForVisible(driver, successMsg).getText();
     }
 

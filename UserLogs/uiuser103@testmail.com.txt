@@ -1,24 +1,6 @@
 ===== NEW TEST RUN =====
 User: uiuser103@testmail.com
-Time: 2026-06-01T22:03:42.939296700
-========================
-
-[INFO] TC START: TC_03
-[INFO] NOTE CREATED IN UI: UI Note
-[INFO] TOTAL CREATED: 1
-===== NEW TEST RUN =====
-User: uiuser103@testmail.com
-Time: 2026-06-01T22:18:49.059352
-========================
-
-[INFO] TC START: TC_03
-[INFO] NOTE CREATED IN UI: UI Note
-[INFO] TOTAL CREATED: 1
-===== NEW TEST RUN =====
-User: uiuser103@testmail.com
-Time: 2026-06-01T22:39:30.175609200
-========================
-
+Time: 2026-06-02T11:31:33.900816
 [INFO] TC START: TC_03
 [INFO] NOTE CREATED IN UI: UI Note
 [INFO] TOTAL CREATED: 1

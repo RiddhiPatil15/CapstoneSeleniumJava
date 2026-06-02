@@ -8,7 +8,6 @@ import utils.ScreenshotUtils;
 
 public class Hooks {
 
-    //Note: order = 1, means highest priority.
     @Before(order = 0)
     public void setUp() {
         System.out.println("=== STARTING NEW SCENARIO - OPENING BROWSER ===");

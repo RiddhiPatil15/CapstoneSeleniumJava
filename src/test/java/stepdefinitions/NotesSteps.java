@@ -24,7 +24,6 @@ public class NotesSteps {
     private List<String> createdTitles = new ArrayList<>();
     private int apiCount;
     private String deletedNoteTitle;
-    //List<Map<String, String>> uiNotes = new ArrayList<>();
     private String editedTitle;
     private String editedDescription;
     private List<Map<String, String>> currentRunNotes = new ArrayList<>();
@@ -63,7 +62,6 @@ public class NotesSteps {
             note.put("title", title);
             note.put("description", description);
             note.put("category", category);
-//            uiNotes.add(note);
             currentRunNotes.add(note);
         }
         LoggerUtils.info("TOTAL CREATED: " + createdTitles.size());
@@ -253,5 +251,6 @@ public class NotesSteps {
             notesApi.deleteNote(id);
         }
         LoggerUtils.info("ALL NOTES CLEANED UP BEFORE LOGOUT");
+        LoggerUtils.close();
     }
 }

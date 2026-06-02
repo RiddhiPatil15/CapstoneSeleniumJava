@@ -19,7 +19,6 @@ public class LoggerUtils {
             log("===== NEW TEST RUN =====");
             log("User: " + email);
             log("Time: " + LocalDateTime.now());
-            log("========================\n");
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -48,6 +47,7 @@ public class LoggerUtils {
         try {
             if (writer != null) {
                 log("===== END RUN =====");
+                log("========================\n");
                 writer.close();
             }
         } catch (Exception ignored) {}

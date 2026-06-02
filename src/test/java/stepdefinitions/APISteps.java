@@ -6,6 +6,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import utils.AllureUtils;
 import utils.ConfigReader;
+import utils.LoggerUtils;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -16,7 +18,6 @@ import java.util.Map;
 public class APISteps {
     private final String BASE_URL = ConfigReader.getProperty("apiBaseUrl");
     private final NotesApi notesApi = new NotesApi();
-    //private String token;
     private String email;
     private String password;
     private String createdNoteId;
@@ -146,5 +147,6 @@ public class APISteps {
         }
         log("LOGOUT SUCCESS");
         log("========================");
+        log("========================\n");
     }
 }

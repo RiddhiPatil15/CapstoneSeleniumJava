@@ -76,47 +76,6 @@ public class NotesApi {
                 .delete("/notes/" + noteId);
     }
 
-//    // note: get note count
-//    public int getNotesCount() {
-//        return getNotes()
-//                .jsonPath()
-//                .getList("data")
-//                .size();
-//    }
-//
-//    // note: get first not ID
-//    public String getFirstNoteId() {
-//        List<String> ids = getNotes().jsonPath().getList("data.id");
-//        if (ids == null || ids.isEmpty()) {
-//            throw new RuntimeException("No note IDs found");
-//        }
-//        return ids.get(0);
-//    }
-
-//    // note: get not title for latest note
-//    public String getLatestNoteTitle() {
-//        List<String> titles = getNotes().jsonPath().getList("data.title");
-//        if (titles == null || titles.isEmpty()) {
-//            throw new RuntimeException("No note titles found");
-//        }
-//        return titles.get(0);
-//    }
-//
-//    // note: update note
-//    public Response updateNote(String noteId, String title, String description) {
-//        Map<String, String> body = new HashMap<>();
-//        body.put("title", title);
-//        body.put("description", description);
-//
-//        return RestAssured
-//                .given()
-//                .baseUri(BASE_URL)
-//                .headers(headers())
-//                .contentType("application/json")
-//                .body(body)
-//                .put("/notes/" + noteId);
-//    }
-
     // note: logout
     public Response logout() {
         return RestAssured

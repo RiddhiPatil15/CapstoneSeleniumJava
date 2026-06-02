@@ -20,9 +20,10 @@ public class LoginPage {
 
     By email = By.cssSelector("[data-testid='login-email']");
     By password = By.cssSelector("[data-testid='login-password']");
-    By loginBtn = By.xpath("//button[text()='Login']");
-    By dashboardIndicator = By.xpath("//*[@data-testid='profile']");
-    By logoutBtn = By.xpath("//button[text()='Logout']");
+    By loginBtn = By.cssSelector("[data-testid='login-submit']");
+    By dashboardIndicator = By.cssSelector("[data-testid='profile']");
+    By logoutBtn = By.cssSelector("[data-testid='logout']");
+
 
     private void waitForLoginPage() {
        WaitUtils.waitForVisible(driver, email);
